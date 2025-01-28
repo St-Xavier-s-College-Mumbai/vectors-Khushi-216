@@ -3,84 +3,95 @@
 #include <sstream>
 #include <vector>
 #include <string>
-#include <iomanip> // for setting precision
-
-// Structure to hold student data
+#include <iomanip>
+using namespace std;
 struct Student {
     int ID;
-    std::string Name;
+    string Name;
     int Age;
-    std::string Major;
+    string Major;
     double GPA;
 };
 
-// Function to read student data from a CSV file
-std::vector<Student> readCSV(const std::string& filename) {
-    std::vector<Student> students;
-    std::ifstream file(filename);
+
+// Reading data
+vector<Student> readCSV(const string& filename) {
+    vector<Student> students;
+    ifstream file(filename);
     if (!file.is_open()) {
-        throw std::runtime_error("Error opening file: " + filename);
+        throw runtime_error("Error opening file: " + filename);
     }
 
-    std::string line;
-    // Skip the header line
-    std::getline(file, line);
 
-    while (std::getline(file, line)) {
-        std::istringstream stream(line);
+    string line;
+    getline(file, line);
+
+
+    while (getline(file, line)) {
+        istringstream stream(line);
         Student student;
-        std::string value;
+        string value;
 
-        // Parse the CSV line
-        std::getline(stream, value, ',');
-        student.ID = std::stoi(value);
 
-        std::getline(stream, student.Name, ',');
+        getline(stream, value, ',');
+        student.ID = stoi(value);
 
-        std::getline(stream, value, ',');
-        student.Age = std::stoi(value);
 
-        std::getline(stream, student.Major, ',');
+        getline(stream, student.Name, ',');
 
-        std::getline(stream, value, ',');
-        student.GPA = std::stod(value);
+
+        getline(stream, value, ',');
+        student.Age = stoi(value);
+
+
+        getline(stream, student.Major, ',');
+
+
+        getline(stream, value, ',');
+        student.GPA = stod(value);
+
 
         students.push_back(student);
     }
+
 
     file.close();
     return students;
 }
 
+
 // Function to display all student details
-void displayStudents(const std::vector<Student>& students) {
-    std::cout << "Total Students: " << students.size() << std::endl;
+void display(const vector<Student>& students) {
+    cout << "Total Students: " << students.size() << endl;
     for (const auto& student : students) {
-        std::cout << "ID: " << student.ID
+        cout << "ID: " << student.ID
                   << ", Name: " << student.Name
                   << ", Age: " << student.Age
                   << ", Major: " << student.Major
-                  << ", GPA: " << std::fixed << std::setprecision(2) << student.GPA
-                  << std::endl;
+                  << ", GPA: " << fixed << setprecision(2) << student.GPA
+                  << endl;
     }
 }
 
-// Function to filter students based on GPA > 3.0
-std::vector<Student> filterStudentsByGPA(const std::vector<Student>& students, double threshold) {
-    std::vector<Student> filtered;
+
+// Filtering students based on GPA > 3.0
+vector<Student> GPA_filter(const vector<Student>& students, double threshold) {
+    vector<Student> filter;
     for (const auto& student : students) {
         if (student.GPA > threshold) {
-            filtered.push_back(student);
+            filter.push_back(student);
         }
     }
-    return filtered;
+    return filter;
 }
 
-// Function to calculate the average age of students
-double calculateAverageAge(const std::vector<Student>& students) {
+
+// average age
+double avg_age(const vector<Student>& students) {
     if (students.empty()) {
         return 0.0;
     }
+
 
     int totalAge = 0;
     for (const auto& student : students) {
@@ -89,54 +100,65 @@ double calculateAverageAge(const std::vector<Student>& students) {
     return static_cast<double>(totalAge) / students.size();
 }
 
-// Function to write filtered students to a new CSV file
-void writeCSV(const std::string& filename, const std::vector<Student>& students) {
-    std::ofstream file(filename);
+
+// filter students to a new CSV file
+void writeCSV(const string& filename, const vector<Student>& students) {
+    ofstream file(filename);
     if (!file.is_open()) {
-        throw std::runtime_error("Error opening file: " + filename);
+        throw runtime_error("Error opening file: " + filename);
     }
 
-    // Write header
+
+   
     file << "ID,Name,Age,Major,GPA\n";
+
 
     for (const auto& student : students) {
         file << student.ID << ","
              << student.Name << ","
              << student.Age << ","
              << student.Major << ","
-             << std::fixed << std::setprecision(2) << student.GPA << "\n";
+             << fixed << setprecision(2) << student.GPA << "\n";
     }
+
 
     file.close();
 }
 
+
 int main() {
     try {
-        // Read students from the CSV file
-        std::vector<Student> students = readCSV("students.csv");
+        vector<Student> students = readCSV("students.csv");
 
-        // Display all students
-        displayStudents(students);
 
-        // Filter students by GPA > 3.0
-        std::vector<Student> filteredStudents = filterStudentsByGPA(students, 3.0);
+        display(students);
 
-        // Display filtered students
-        std::cout << "\nFiltered Students (GPA > 3.0):\n";
-        displayStudents(filteredStudents);
+
+        vector<Student> filterStudents = GPA_filter(students, 3.0);
+
+
+        cout << "\nFiltered Students (GPA > 3.0):\n";
+        display(filterStudents);
+
 
         // Calculate and display the average age
-        double averageAge = calculateAverageAge(students);
-        std::cout << "\nAverage Age of Students: " << std::fixed << std::setprecision(2) << averageAge << std::endl;
+        double averageAge = avg_age(students);
+        cout << "\nAverage Age of Students: " << fixed << averageAge << endl;
 
-        // Write filtered students to a new CSV file
-        writeCSV("filtered_students.csv", filteredStudents);
 
-        std::cout << "\nFiltered students have been written to filtered_students.csv" << std::endl;
-    } catch (const std::exception& e) {
-        std::cerr << "Error: " << e.what() << std::endl;
+        // Write filter students to a new CSV file
+        writeCSV("filter_students.csv", filterStudents);
+
+
+        cout << "\nfilter students have been written to filter_students.csv" << endl;
+    } catch (const exception& e) {
+        cerr << "Error: " << e.what() << endl;
         return 1;
     }
 
+
     return 0;
 }
+
+
+
