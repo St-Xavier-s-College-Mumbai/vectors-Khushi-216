@@ -3,7 +3,7 @@
 #include <sstream>
 #include <vector>
 #include <string>
-#include <iomanip>
+
 using namespace std;
 struct Student {
     int ID;
@@ -68,7 +68,7 @@ void display(const vector<Student>& students) {
                   << ", Name: " << student.Name
                   << ", Age: " << student.Age
                   << ", Major: " << student.Major
-                  << ", GPA: " << fixed << setprecision(2) << student.GPA
+                  << ", GPA: " << fixed << student.GPA
                   << endl;
     }
 }
@@ -118,7 +118,7 @@ void writeCSV(const string& filename, const vector<Student>& students) {
              << student.Name << ","
              << student.Age << ","
              << student.Major << ","
-             << fixed << setprecision(2) << student.GPA << "\n";
+             << fixed << student.GPA << "\n";
     }
 
 
@@ -129,28 +129,19 @@ void writeCSV(const string& filename, const vector<Student>& students) {
 int main() {
     try {
         vector<Student> students = readCSV("students.csv");
-
-
         display(students);
 
-
         vector<Student> filterStudents = GPA_filter(students, 3.0);
+        writeCSV("filter_students.csv", filterStudents);
 
-
+        cout << "\nFiltered students have been written to filter_students.csv" << endl;
         cout << "\nFiltered Students (GPA > 3.0):\n";
         display(filterStudents);
 
-
-        // Calculate and display the average age
+        //average age
         double averageAge = avg_age(students);
-        cout << "\nAverage Age of Students: " << fixed << averageAge << endl;
-
-
-        // Write filter students to a new CSV file
-        writeCSV("filter_students.csv", filterStudents);
-
-
-        cout << "\nfilter students have been written to filter_students.csv" << endl;
+        cout << "\nAverage Age of Students: " << fixed << averageAge << endl;  
+        
     } catch (const exception& e) {
         cerr << "Error: " << e.what() << endl;
         return 1;
